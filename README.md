@@ -62,7 +62,8 @@ tunnels · Ollama + ComfyUI + waifu2x adapters · Wake-on-LAN · cloud VPS
 
 ## Status
 
-Sanitized public overview of a personal production system that runs daily.
-The real node registry (addresses, credentials, machine names) is not part
-of this repo; `nodes.example.json` shows its shape. Implementation
-walkthrough available on request.
+This is the real system, running daily. The dispatcher (`fleet.py`), the
+adapters (`adapters.py`), the dashboard (`dash.py`), and the power control
+(`box_power.py`) are the actual modules, lightly sanitized: hosts,
+credentials, and MAC addresses come from the environment, and the real node
+registry stays private (`nodes.example.json` shows its shape).
