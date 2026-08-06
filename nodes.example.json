@@ -1,0 +1,85 @@
+{
+  "_comment": [
+    "Example node registry - the shape of the real nodes.json, which stays",
+    "private (addresses, credentials, machine names).",
+    "",
+    "mutex: nodes sharing a mutex group share one GPU's VRAM and may never",
+    "run at the same time.",
+    "cost_s: measured seconds per unit of work, used to rank candidates."
+  ],
+
+  "nodes": [
+    {
+      "name": "workstation-cpu",
+      "transport": "local",
+      "capabilities": ["python", "node", "build"],
+      "concurrency": 4,
+      "mutex": null,
+      "cost_s": 1
+    },
+    {
+      "name": "workstation-llm",
+      "transport": "http",
+      "endpoint": "http://127.0.0.1:11434",
+      "health": "/api/tags",
+      "capabilities": ["llm"],
+      "concurrency": 1,
+      "mutex": "workstation-vram",
+      "cost_s": 45
+    },
+    {
+      "name": "workstation-gpu",
+      "transport": "http",
+      "endpoint": "http://127.0.0.1:8188",
+      "health": "/system_stats",
+      "capabilities": ["sdxl", "video"],
+      "concurrency": 1,
+      "mutex": "workstation-vram",
+      "on_acquire": ["evict_llm_peers"],
+      "cost_s": 315
+    },
+    {
+      "name": "gpuhost-llm",
+      "transport": "http",
+      "endpoint": "http://REDACTED:11434",
+      "health": "/api/tags",
+      "capabilities": ["llm"],
+      "concurrency": 1,
+      "mutex": "gpuhost-vram",
+      "cost_s": 8
+    },
+    {
+      "name": "gpuhost-gpu",
+      "transport": "ssh-http",
+      "ssh": "user@REDACTED",
+      "endpoint": "http://127.0.0.1:8188",
+      "local_port": 18188,
+      "health": "/system_stats",
+      "capabilities": ["sdxl"],
+      "concurrency": 1,
+      "mutex": "gpuhost-vram",
+      "on_acquire": ["evict_llm_peers", "set_render_lock"],
+      "on_release": ["clear_render_lock"],
+      "cost_s": 13
+    },
+    {
+      "name": "gpuhost-upscale",
+      "transport": "http",
+      "endpoint": "http://REDACTED:8710",
+      "health": "/health",
+      "capabilities": ["upscale"],
+      "concurrency": 1,
+      "mutex": null,
+      "cost_s": 6
+    },
+    {
+      "name": "vps",
+      "transport": "ssh",
+      "ssh": "user@REDACTED",
+      "capabilities": ["python-cpu"],
+      "concurrency": 2,
+      "mutex": null,
+      "cost_s": 30
+    }
+  ]
+}

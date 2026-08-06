@@ -1,0 +1,9 @@
+nodes.json
+jobs.jsonl
+out/
+__pycache__/
+.env
+.env.*
+*.key
+*.pem
+id_rsa*
